@@ -39,7 +39,7 @@ class App(CbApp):
         self.buttonsID = ""
         self.switchID = ""
         # Super-class init must be called
-        super(Adaptor, self).__init__(argv)
+        CbApp.__init__(self, argv)
 
     def setState(self, action):
         self.state = action
@@ -49,6 +49,7 @@ class App(CbApp):
         self.sendManagerMessage(msg)
 
     def onAdaptorFunctions(self, message):
+        logging.debug("%s onadaptorFunctions, message: %s", ModuleName, message)
         for p in message["functions"]:
             if p["parameter"] == "buttons":
                 self.buttonsID = message["id"]
@@ -74,15 +75,19 @@ class App(CbApp):
                            "request": "command"}
                 if message["content"] == "buttons":
                     logging.debug("%s %s buttons = %s", ModuleName, self.id, message["data"])
-                    command["data"] = "on"
-                    logging.debug("%s %s Switching on", ModuleName, self.id)
-                    self.sendMessage(command, self.switchID)
+                    if message["data"]["rightButton"] == 1:
+                        command["data"] = "on"
+                        self.sendMessage(command, self.switchID)
+                    elif message["data"]["leftButton"] == 1:
+                        command["data"] = "off"
+                        self.sendMessage(command, self.switchID)
             else:
                 logging.debug("%s Trying to process temperature before switch connected", ModuleName)
         elif message["id"] == self.switchID:
             self.switchState = message["body"]
 
     def onConfigureMessage(self, config):
+        logging.debug("%s onConfigureMessage, config: %s", ModuleName, config)
         self.setState("starting")
 
 if __name__ == '__main__':
