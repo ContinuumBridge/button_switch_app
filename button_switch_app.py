@@ -36,7 +36,7 @@ class App(CbApp):
         self.appClass = "control"
         self.state = "stopped"
         self.gotSwitch = False
-        self.buttonsID = ""
+        self.buttonsID = [] 
         self.switchID = ""
         # Super-class init must be called
         CbApp.__init__(self, argv)
@@ -52,7 +52,7 @@ class App(CbApp):
         logging.debug("%s onadaptorFunctions, message: %s", ModuleName, message)
         for p in message["functions"]:
             if p["parameter"] == "buttons":
-                self.buttonsID = message["id"]
+                self.buttonsID.append(message["id"])
                 req = {"id": self.id,
                       "request": "functions",
                       "functions": [
@@ -69,7 +69,7 @@ class App(CbApp):
         self.setState("running")
 
     def onAdaptorData(self, message):
-        if message["id"] == self.buttonsID:
+        if message["id"] in self.buttonsID:
             if self.gotSwitch:
                 command = {"id": self.id,
                            "request": "command"}
