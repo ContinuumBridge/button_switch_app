@@ -74,7 +74,7 @@ class App(CbApp):
                 command = {"id": self.id,
                            "request": "command"}
                 if message["content"] == "buttons":
-                    logging.debug("%s %s buttons = %s", ModuleName, self.id, message["data"])
+                    #logging.debug("%s %s buttons = %s", ModuleName, self.id, message["data"])
                     if message["data"]["rightButton"] == 1:
                         command["data"] = "on"
                         self.sendMessage(command, self.switchID)
